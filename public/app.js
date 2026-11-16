@@ -1,9 +1,7 @@
-// All communication with the back end goes through api() using fetch().
-// Data from the server is always inserted with textContent (never innerHTML) to prevent XSS.
+// All communication with the back end goes through api() using fetch()
 
 const API_URL = 'api.php';
 
-// Columns shown in Manage for each table: [header, function that returns the cell text]
 const COLUMNS = {
   students: [
     ['Name', s => `${s.first} ${s.last}`],
@@ -27,7 +25,7 @@ const COLUMNS = {
   ],
 };
 
-// Readable labels for the drop-down lists
+// readable labels for the drop down lists
 const OPTION_LABELS = {
   students: s => `${s.last}, ${s.first} (${s.email})`,
   courses: c => `${c.code} – ${c.title}`,
@@ -37,7 +35,7 @@ const statusBox = document.getElementById('status');
 
 // ---------- helpers ----------
 
-/** Calls the back end; resolves with the JSON body or throws an Error with the server's message */
+/** Calls the back end & resolves with the JSON body/throws an Error with the server's message */
 async function api(params, method = 'GET', body = null) {
   const options = { method, headers: {} };
   if (body !== null) {
@@ -59,7 +57,7 @@ function showStatus(message, type) {
   statusBox.hidden = false;
 }
 
-/** Fills a <select> with records from the server, e.g. all courses */
+/** Fills a <select> with records from the server */
 async function fillSelect(select, resource) {
   const { data } = await api({ resource });
   select.replaceChildren(new Option('Choose…', ''));
@@ -70,7 +68,7 @@ async function fillSelect(select, resource) {
 
 // ---------- menu ----------
 
-/** Only switches which section is visible */
+/** only switches which section is visible */
 function switchTo(name) {
   for (const button of document.querySelectorAll('nav button')) {
     button.setAttribute('aria-pressed', String(button.dataset.view === name));
@@ -81,7 +79,7 @@ function switchTo(name) {
   statusBox.hidden = true;
 }
 
-/** Switches section and loads its data (used by the menu) */
+/** switches section and loads its data */
 function showView(name) {
   switchTo(name);
   if (name === 'create') showForm(document.getElementById('create-table').value);
@@ -99,14 +97,14 @@ function formFor(resource) {
   return document.querySelector(`form[data-resource="${resource}"]`);
 }
 
-/** Shows the form of one table and loads its drop-down lists */
+/** shows the form of one table and loads its drop down lists */
 async function showForm(resource, record = null) {
   for (const form of document.querySelectorAll('form')) {
     form.hidden = form.dataset.resource !== resource;
   }
   const form = formFor(resource);
   document.getElementById('create-table').value = resource;
-  document.getElementById('create-table').disabled = record !== null;   // can't switch tables mid-edit
+  document.getElementById('create-table').disabled = record !== null;  
   document.getElementById('form-heading').textContent = record ? 'Edit record' : 'Create a record';
   form.querySelector('.cancel').hidden = record === null;
   form.reset();
@@ -131,7 +129,7 @@ document.getElementById('create-table').addEventListener('change', e => showForm
 
 for (const form of document.querySelectorAll('form')) {
   form.addEventListener('submit', async event => {
-    event.preventDefault();                     // stay on the page; send with fetch instead
+    event.preventDefault();                  
     const resource = form.dataset.resource;
     const values = Object.fromEntries(new FormData(form));
     const id = values.id;
@@ -144,15 +142,15 @@ for (const form of document.querySelectorAll('form')) {
         : await api({ resource }, 'POST', values);
       showStatus(result.message, 'success');
       if (id) {
-        switchTo('manage');                     // after an edit, go back to the list
+        switchTo('manage');                     
         document.getElementById('manage-table').value = resource;
         await loadRecords();
         showStatus(result.message, 'success');
       } else {
-        await showForm(resource);               // empty form, refreshed drop-downs
+        await showForm(resource);              
       }
     } catch (error) {
-      showStatus(error.message, 'error');      // the back end's explanation
+      showStatus(error.message, 'error');   
     }
   });
 
@@ -176,7 +174,7 @@ async function loadRecords() {
       th.textContent = header;
       headerRow.append(th);
     }
-    headerRow.append(document.createElement('th'));   // column for the Edit/Delete links
+    headerRow.append(document.createElement('th'));  
     table.tHead.replaceChildren(headerRow);
 
     table.tBodies[0].replaceChildren();
@@ -200,7 +198,7 @@ async function loadRecords() {
   }
 }
 
-/** An <a> that runs onClick instead of navigating */
+/** an <a> that runs onClick instead of navigating */
 function link(text, onClick) {
   const a = document.createElement('a');
   a.href = '#';
@@ -229,7 +227,7 @@ async function deleteRecord(resource, id) {
     await loadRecords();
     showStatus(result.message, 'success');
   } catch (error) {
-    showStatus(error.message, 'error');        // e.g. "This course is part of a prerequisite chain…"
+    showStatus(error.message, 'error');      
   }
 }
 
@@ -276,5 +274,4 @@ transcriptSelect.addEventListener('change', async () => {
   }
 });
 
-// first screen
 showView('create');

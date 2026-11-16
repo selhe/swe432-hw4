@@ -1,3 +1,4 @@
+[hidden] { display: none !important; }   /* without this, "form { display: grid }" would show hidden forms */
 :root { --accent: #006633; --border: #ccc; }
 body { font-family: system-ui, Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 1rem; color: #222; }
 header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 2px solid var(--accent); }

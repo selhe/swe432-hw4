@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/Table.php';
 
-/** Each row means "student_id took course_id and earned grade" */
+/** Each row means student_id took course_id and earned grade */
 class EnrollmentTable extends Table
 {
     public const GRADES = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'];
@@ -42,7 +42,6 @@ class EnrollmentTable extends Table
         return $this->find($id);
     }
 
-    /** @param int $id the enrollment being edited (0 when creating) */
     private function validate(array $input, int $id = 0): array
     {
         $v = new Validator($input);

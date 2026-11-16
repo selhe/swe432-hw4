@@ -32,7 +32,7 @@ class CourseTable extends Table
         return $this->find($id);
     }
 
-    /** Rule 2: a course used in any prerequisite, or with enrollments, can't be deleted */
+    /** a course used in any prerequisite/ with enrollments can't be deleted */
     protected function checkCanDelete(int $id): void
     {
         $links = (int) $this->db->fetchValue(
@@ -48,7 +48,6 @@ class CourseTable extends Table
         }
     }
 
-    /** @param int $id the course being edited (0 when creating) */
     private function validate(array $input, int $id = 0): array
     {
         $v = new Validator($input);

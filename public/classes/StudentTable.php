@@ -35,7 +35,7 @@ class StudentTable extends Table
         return $this->find($id);
     }
 
-    /** Courses the student took, joined with the courses table, plus total credits */
+    /** Courses the student joined with the courses table + total credits */
     public function transcript(int $id): array
     {
         $student = $this->find($id);
@@ -54,7 +54,7 @@ class StudentTable extends Table
         return ['student' => $student, 'courses' => $courses, 'total_credits' => $total];
     }
 
-    /** Rule 2: a student with enrollments can't be deleted */
+    /** a student with enrollments can't be deleted */
     protected function checkCanDelete(int $id): void
     {
         $count = (int) $this->db->fetchValue('SELECT COUNT(*) FROM enrollments WHERE student_id = ?', [$id]);
@@ -63,7 +63,6 @@ class StudentTable extends Table
         }
     }
 
-    /** @param int $id the student being edited (0 when creating), so its own email isn't a "duplicate" */
     private function validate(array $input, int $id = 0): array
     {
         $v = new Validator($input);
@@ -74,7 +73,6 @@ class StudentTable extends Table
             'birthdate' => $v->date('birthdate', 'Birthdate'),
             'date_of_enrollment' => $v->date('date_of_enrollment', 'Date of enrollment'),
         ];
-        // YYYY-MM-DD strings compare correctly as text
         if ($student['birthdate'] >= $student['date_of_enrollment']) {
             throw new ApiException('Date of enrollment must be after the birthdate.');
         }

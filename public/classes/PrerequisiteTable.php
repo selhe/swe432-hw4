@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/Table.php';
 
-/** Each row means "course_id requires prereq_id" */
 class PrerequisiteTable extends Table
 {
     protected string $table = 'course_prerequisites';
@@ -9,7 +8,6 @@ class PrerequisiteTable extends Table
 
     public function all(): array
     {
-        // courses is joined twice: once for the course, once for its prerequisite
         return $this->db->fetchAll(
             'SELECT p.id, p.course_id, p.prereq_id,
                     c.code AS course_code, c.title AS course_title,
@@ -43,9 +41,7 @@ class PrerequisiteTable extends Table
     }
 
     /**
-     * Rule 1: no self-prerequisite, no duplicate, and no loop.
-     * @param int $id the link being edited (0 when creating); it is ignored in the
-     *                checks because the edit replaces it
+     * no self-prerequisite, no duplicate, and no loop.
      */
     private function validate(array $input, int $id = 0): array
     {
@@ -69,7 +65,6 @@ class PrerequisiteTable extends Table
 
         $path = $this->findPath($prereqId, $courseId, $id);
         if ($path !== null) {
-            // e.g. CS101 → CS301 → CS201 → CS101
             $loop = implode(' → ', array_map(fn($courseOnPath) => $this->code($courseOnPath), array_merge([$courseId], $path)));
             throw new ApiException(
                 "{$this->code($courseId)} cannot require {$this->code($prereqId)}: "
@@ -81,13 +76,10 @@ class PrerequisiteTable extends Table
     }
 
     /**
-     * Breadth-first search along "requires" links, starting at $from.
-     * Returns the chain of course ids from $from to $to (e.g. [301, 201, 101]),
-     * or null if $from does not require $to directly or indirectly.
+     * Bfs along requires links
      */
     private function findPath(int $from, int $to, int $ignoreLinkId): ?array
     {
-        // Load every link once: $requires[course] = list of courses it requires
         $requires = [];
         $links = $this->db->fetchAll(
             'SELECT course_id, prereq_id FROM course_prerequisites WHERE id <> ?',
@@ -97,12 +89,11 @@ class PrerequisiteTable extends Table
             $requires[$link['course_id']][] = (int) $link['prereq_id'];
         }
 
-        $cameFrom = [$from => null];   // visited courses, and how we reached each one
+        $cameFrom = [$from => null];  
         $queue = [$from];
         while (count($queue) > 0) {
             $current = array_shift($queue);
             if ($current === $to) {
-                // walk back through $cameFrom to rebuild the chain
                 $path = [];
                 for ($step = $to; $step !== null; $step = $cameFrom[$step]) {
                     array_unshift($path, $step);
@@ -119,7 +110,6 @@ class PrerequisiteTable extends Table
         return null;
     }
 
-    /** Course code for messages, e.g. 'CS101' */
     private function code(int $courseId): string
     {
         return (string) $this->db->fetchValue('SELECT code FROM courses WHERE id = ?', [$courseId]);

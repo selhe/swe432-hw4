@@ -7,15 +7,8 @@ require_once __DIR__ . '/PrerequisiteTable.php';
 require_once __DIR__ . '/EnrollmentTable.php';
 
 /**
- * Request handling: reads the HTTP method, query string and JSON body,
- * calls the right Table method, and always answers with JSON.
- *
- *   GET    api.php?resource=courses            list
- *   GET    api.php?resource=courses&id=3       one record
- *   POST   api.php?resource=courses            create (JSON body)
- *   PUT    api.php?resource=courses&id=3       update (JSON body)
- *   DELETE api.php?resource=courses&id=3       delete
- *   GET    api.php?resource=transcript&id=5    transcript of student 5
+ * Request handling: reads the HTTP method, query string/JSON body,
+ * calls the Table method, answers with JSON
  */
 class Api
 {
@@ -32,12 +25,9 @@ class Api
             [$status, $payload] = $this->dispatch();
             $this->respond($status, $payload);
         } catch (ApiException $e) {
-            // expected problems: invalid input, missing record, blocked operation
             $this->respond($e->getStatus(), ['error' => $e->getMessage()]);
         } catch (PDOException $e) {
-            error_log('Database error: ' . $e->getMessage());   // details stay in the server log
-            // SQLSTATE class 23 = integrity constraint violation (standard SQL):
-            // the schema's safety net caught something our own checks missed
+            error_log('Database error: ' . $e->getMessage());
             if (str_starts_with((string) $e->getCode(), '23')) {
                 $this->respond(409, ['error' => 'This change conflicts with existing data.']);
             } else {
@@ -85,7 +75,7 @@ class Api
         }
     }
 
-    /** Decodes the JSON request body into an array */
+    /** decides the JSON request body into an array */
     private function body(): array
     {
         $data = json_decode(file_get_contents('php://input'), true);

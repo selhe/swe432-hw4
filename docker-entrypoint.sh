@@ -1,12 +1,11 @@
 #!/bin/sh
 set -e
 
-# 1. Make Apache listen on the port Render expects
 : "${PORT:=10000}"
 sed -i "s/^Listen 80\$/Listen ${PORT}/" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 
-# 2. Apply the schema (idempotent: CREATE TABLE IF NOT EXISTS), retrying while the DB starts up
+# Apply the schema
 if [ -n "$DATABASE_URL" ]; then
   i=0
   until psql "$DATABASE_URL" -q -1 -v ON_ERROR_STOP=1 -f /app/schema.sql; do

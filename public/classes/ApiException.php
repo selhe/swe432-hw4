@@ -1,7 +1,6 @@
 <?php
 /**
- * An error the user should see: carries a readable message and the HTTP
- * status code to send (400 invalid input, 404 not found, 409 conflict, ...).
+ * An error the user should see
  */
 class ApiException extends Exception
 {

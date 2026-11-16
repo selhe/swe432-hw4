@@ -3,7 +3,7 @@ databases:
     plan: free
     databaseName: registrar
     user: registrar
-    ipAllowList: []          # private network only; the web service connects internally
+    ipAllowList: []        
 
 services:
   - type: web
