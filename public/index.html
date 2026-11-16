@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registrar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>University Registrar</h1>
+    <nav aria-label="Main menu">
+      <button type="button" data-view="create" aria-pressed="true">Create</button>
+      <button type="button" data-view="manage" aria-pressed="false">Manage</button>
+      <button type="button" data-view="transcript" aria-pressed="false">Transcript</button>
+    </nav>
+  </header>
+
+  <!-- Loading / success / error messages; aria-live makes screen readers announce them -->
+  <p id="status" role="status" aria-live="polite" hidden></p>
+
+  <main>
+    <!-- CREATE (also used for editing: the Edit link fills one of these forms) -->
+    <section id="create-view">
+      <h2 id="form-heading">Create a record</h2>
+      <label>Table
+        <select id="create-table">
+          <option value="students">Students</option>
+          <option value="courses">Courses</option>
+          <option value="prerequisites">Prerequisites</option>
+          <option value="enrollments">Enrollments</option>
+        </select>
+      </label>
+
+      <form data-resource="students">
+        <input type="hidden" name="id">
+        <label>First name <input name="first" required maxlength="100"></label>
+        <label>Last name <input name="last" required maxlength="100"></label>
+        <label>Email <input name="email" type="email" required maxlength="255"></label>
+        <label>Birthdate <input name="birthdate" type="date" required></label>
+        <label>Date of enrollment <input name="date_of_enrollment" type="date" required></label>
+        <div class="actions"><button type="submit">Save</button> <button type="button" class="cancel" hidden>Cancel edit</button></div>
+      </form>
+
+      <form data-resource="courses" hidden>
+        <input type="hidden" name="id">
+        <label>Code <input name="code" required maxlength="20" placeholder="CS101"></label>
+        <label>Title <input name="title" required maxlength="200"></label>
+        <label>Credits <input name="credits" type="number" min="1" max="6" step="1" required></label>
+        <div class="actions"><button type="submit">Save</button> <button type="button" class="cancel" hidden>Cancel edit</button></div>
+      </form>
+
+      <form data-resource="prerequisites" hidden>
+        <input type="hidden" name="id">
+        <label>Course <select name="course_id" data-options="courses" required></select></label>
+        <label>Requires <select name="prereq_id" data-options="courses" required></select></label>
+        <div class="actions"><button type="submit">Save</button> <button type="button" class="cancel" hidden>Cancel edit</button></div>
+      </form>
+
+      <form data-resource="enrollments" hidden>
+        <input type="hidden" name="id">
+        <label>Student <select name="student_id" data-options="students" required></select></label>
+        <label>Course <select name="course_id" data-options="courses" required></select></label>
+        <label>Grade
+          <select name="grade" required>
+            <option value="">Choose…</option>
+            <option>A</option><option>A-</option><option>B+</option><option>B</option><option>B-</option>
+            <option>C+</option><option>C</option><option>C-</option><option>D</option><option>F</option>
+          </select>
+        </label>
+        <div class="actions"><button type="submit">Save</button> <button type="button" class="cancel" hidden>Cancel edit</button></div>
+      </form>
+    </section>
+
+    <!-- MANAGE -->
+    <section id="manage-view" hidden>
+      <h2>Manage records</h2>
+      <label>Table
+        <select id="manage-table">
+          <option value="students">Students</option>
+          <option value="courses">Courses</option>
+          <option value="prerequisites">Prerequisites</option>
+          <option value="enrollments">Enrollments</option>
+        </select>
+      </label>
+      <table id="records">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- TRANSCRIPT -->
+    <section id="transcript-view" hidden>
+      <h2>Transcript</h2>
+      <label>Student <select id="transcript-student" data-options="students"></select></label>
+      <table id="transcript">
+        <thead><tr><th>Code</th><th>Title</th><th>Credits</th><th>Grade</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th colspan="2">Total credits</th><td id="total-credits">0</td><td></td></tr></tfoot>
+      </table>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+:root { --accent: #006633; --border: #ccc; }
+body { font-family: system-ui, Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 1rem; color: #222; }
+header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 2px solid var(--accent); }
+nav button { padding: .4rem .9rem; border: 1px solid var(--accent); background: #fff; color: var(--accent); cursor: pointer; }
+nav button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+form { display: grid; gap: .6rem; max-width: 420px; margin-top: 1rem; }
+label { display: grid; gap: .2rem; font-weight: 600; max-width: 420px; }
+input, select, button { font: inherit; padding: .35rem; }
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+th, td { border-bottom: 1px solid var(--border); padding: .4rem; text-align: left; }
+td a { margin-right: .6rem; }
+#status { padding: .6rem .8rem; border-radius: 4px; }
+#status.loading { background: #eef; }
+#status.success { background: #e6f4ea; color: #1e5631; }
+#status.error { background: #fde7e9; color: #b00020; }

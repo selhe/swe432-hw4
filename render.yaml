@@ -1,0 +1,19 @@
+databases:
+  - name: registrar-db
+    plan: free
+    databaseName: registrar
+    user: registrar
+    ipAllowList: []          # private network only; the web service connects internally
+
+services:
+  - type: web
+    name: registrar
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: registrar-db
+          property: connectionString
